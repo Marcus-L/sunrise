@@ -1,0 +1,185 @@
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="vendor/mdDateTimePicker.css">
+    <link rel="manifest" href="manifest.json">
+    <style>
+        body {
+            background-color: black;
+            background-image: url("back.jpg");
+            background-size: cover;
+            color: white;
+        }
+        .aligner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+        }
+        .aligner-ui {
+            flex: none;
+        }
+        @font-face {
+            font-family: "LCD";
+            src: url("vendor/digital-7.ttf") format("truetype");
+        }
+        @font-face {
+            font-family: "Printbold";
+            src: url("vendor/printbold_tt.ttf") format("truetype");
+        }
+        .label1 {
+            font-family: "Printbold";
+            font-size: 3em;
+        }
+        .numbers {
+            font-family: "LCD";
+            font-size: 70pt;
+            padding: 0.2em;
+            border-radius: 0.1em;
+            border: 2px solid gray;
+            background-color: black;
+            opacity: 0.6;
+            height: 0.8em;
+        }
+        .slideThree {
+            width: 80px;
+            height: 26px;
+            background: #333;
+            margin: 20px auto;
+            position: relative;
+            border-radius: 50px;
+            box-shadow: inset 0px 1px 1px rgba(0, 0, 0, 0.5), 0px 1px 0px rgba(255, 255, 255, 0.2);
+        }
+        .slideThree:after {
+            content: 'OFF';
+            color: #000;
+            position: absolute;
+            right: 10px;
+            z-index: 0;
+            font: 12px/26px Arial, sans-serif;
+            font-weight: bold;
+            text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.15);
+        }
+        .slideThree:before {
+            content: 'ON';
+            color: #27ae60;
+            position: absolute;
+            left: 10px;
+            z-index: 0;
+            font: 12px/26px Arial, sans-serif;
+            font-weight: bold;
+        }
+        .slideThree label {
+            display: block;
+            width: 34px;
+            height: 20px;
+            cursor: pointer;
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            z-index: 1;
+            background: #fcfff4;
+            background: -webkit-linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);
+            background: linear-gradient(to bottom, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);
+            border-radius: 50px;
+            -webkit-transition: all 0.4s ease;
+            transition: all 0.4s ease;
+            box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.3);
+        }
+        .slideThree input[type=checkbox] {
+            visibility: hidden;
+        }
+        .slideThree input[type=checkbox]:checked+label {
+            left: 43px;
+        }
+    </style>
+    <script src="vendor/jquery.js"></script>
+    <script src="vendor/moment.js"></script>
+    <script src="vendor/draggabilly.pkgd.min.js"></script>
+    <script src="vendor/mdDateTimePicker.js"></script>
+</head>
+
+<body>
+    <div class="aligner">
+        <div class="aligner-ui">
+            <div class="label1">Sunrise Time:</div>
+            <div id="clock" class="numbers">00:00 AM</div>
+            <section title=".slideThree">
+                <div class="slideThree">
+                    <input type="checkbox" id="slideThree" name="check" checked />
+                    <label for="slideThree"></label>
+                </div>
+            </section>
+        </div>
+    </div>
+    <script>
+        // set up time picker
+        var dialog = new mdDateTimePicker.default({
+            type: 'time',
+            trigger: $("#clock").get(0),
+            init: moment($("#clock").text(), "h:mm a")
+        });
+
+        // configure clock events
+        var clock = $("#clock");
+        clock.on("onOk", function () {
+            saveSettings();
+        });
+        clock.on("click", function () {
+            dialog.toggle();
+        });
+
+        // handle enabled slider/checkbox 
+        var enabled = $("#slideThree");
+        enabled.on("change", function() {
+            saveSettings();
+        });
+
+        // refresh settings when regaining focus (i.e. app restart)
+        $(document).on("visibilitychange", function () {
+            if (document.hidden == false) {
+                loadSettings();
+            }
+        });
+        loadSettings();
+
+        // load settings from server
+        function loadSettings() {
+            clock.css("color", "gray");
+            $.ajax({
+                url: "api/settings",
+                cache: false,
+                dataType: "json"
+            }).done(function (data) {
+                clock.css("color", "");
+                dialog.time = moment({
+                    hour: data.hour,
+                    minute: data.minute
+                });
+                enabled.prop("checked", data.enabled);
+                clock.text(dialog.time.format("h:mm a"));
+                clock.css("opacity", data.enabled ? "0.7": "0.1");
+            });
+        }
+
+        // save settings to server
+        function saveSettings() {
+            clock.css("opacity", enabled.is(":checked") ? "0.7": "0.1");
+            clock.text(dialog.time.format("h:mm a"));
+            clock.css("color", "gray");
+            $.ajax({
+                method: "POST",
+                contentType: "application/json",
+                url: "api/settings",
+                data: JSON.stringify({
+                    "hour": dialog.time.hour(),
+                    "minute": dialog.time.minute(),
+                    "enabled": enabled.is(":checked")
+                })
+            });
+            clock.css("color", "");
+        }
+    </script>
+</body>
+</html>

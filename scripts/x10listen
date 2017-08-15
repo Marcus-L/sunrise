@@ -1,0 +1,35 @@
+#!/bin/bash
+
+SCRIPT='/home/pi/sunrise/scripts/x10listen.sh'
+NAME='x10listen'
+
+case "$1" in 
+start)
+   if [ -e /var/run/$NAME.pid ]; then
+      echo $NAME is already running
+   else
+      $SCRIPT &
+      echo $!>/var/run/$NAME.pid
+   fi
+   ;;
+stop)
+   pkill -9 -P `cat /var/run/$NAME.pid`
+   rm /var/run/$NAME.pid
+   ;;
+restart)
+   $0 stop
+   $0 start
+   ;;
+status)
+   if [ -e /var/run/$NAME.pid ]; then
+      echo $NAME is running, pid=`cat /var/run/$NAME.pid`
+   else
+      echo $NAME is NOT running
+      exit 1
+   fi
+   ;;
+*)
+   echo "Usage: $0 {start|stop|status|restart}"
+esac
+
+exit 0 

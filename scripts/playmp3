@@ -1,0 +1,7 @@
+#!/bin/bash
+
+FILE=$1
+S2C=/home/pi/sunrise/scripts/stream2chromecast/stream2chromecast.py
+$S2C -devicename "Bedroom" -setvol 0.7 &
+$S2C -devicename "Bedroom" $FILE
+$S2C -devicename "Bedroom" -setvol 0.5

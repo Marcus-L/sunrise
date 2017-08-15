@@ -1,0 +1,7 @@
+#!/bin/bash
+
+API='http://192.168.5.148/api/s6Mkw2cc477nLQ9wD42A5SOYJYspvKN8LQshpy5A'
+JSON='Content-Type: application/json' 
+curl -H "$JSON" -X PUT -d '{"scene": "vR3UvWS7Rvgs1i2"}' $API/groups/1/action
+curl -H "$JSON" -X PUT -d '{"bri": 254, "transitiontime": 3000}' $API/groups/1/action
+/home/pi/sunrise/scripts/playmp3 /home/pi/sunrise/scripts/wakeup.mp3
