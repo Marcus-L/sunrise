@@ -1,5 +1,5 @@
-# Introduction: Sunrise (a wake up alarm with light and sound)
-A wakeup alarm to replicate the functionality of one of the Philips Wake Up lights, which has the ability to wake you up with gradually increasing light and sounds. Cool idea, but bad execution. See why at my [blog post](https://m4rc.us/).
+# Sunrise (a wake up alarm with light and sound)
+A wakeup alarm to replicate the functionality of one of the Philips Wake Up lights, which has the ability to wake you up with gradually increasing light and sounds. Cool idea, but bad execution. See why at my [blog post](https://m4rc.us/2017/08/14/wake-up-with-the-sunrise/).
 
 <img src="img/hf3531.png" height="200" alt="Philips HF3531"/>
 
