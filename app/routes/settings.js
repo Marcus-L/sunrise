@@ -13,7 +13,7 @@ router.post('/', function(req, res, next) {
   fs.writeFileSync(settingspath, JSON.stringify(req.body));
 
   // configure cron
-  var crondata = req.body.minute + ' ' + req.body.hour + ' * * * /home/pi/do_sunrise\n';
+  var crondata = req.body.minute + ' ' + req.body.hour + ' * * * /home/pi/sunrise/scripts/do_sunrise\n';
   fs.writeFileSync(cronpath, req.body.enabled==true ? crondata : "\n");
   cp.exec('crontab -u pi ' + cronpath, function() {});
   res.send("OK");
